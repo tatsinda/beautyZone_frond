@@ -60,7 +60,7 @@ class HairStyleDetailScreen extends StatelessWidget {
                   Stack(
                     children: [
                       Image.network(
-                        'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=200',
+                        'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800',
                         width: double.infinity,
                         height: 350,
                         fit: BoxFit.cover,

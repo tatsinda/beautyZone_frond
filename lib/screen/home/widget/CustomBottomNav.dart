@@ -1,3 +1,5 @@
+import 'package:beauty_zone/screen/home/component/HomePage.dart';
+import 'package:beauty_zone/screen/profil/component/ProfilPage.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNav extends StatelessWidget {
@@ -23,26 +25,43 @@ class CustomBottomNav extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(
-            icon: Icons.home_filled,
-            label: "Home",
-            index: 0,
-          ),
-          _buildNavItem(
-            icon: Icons.calendar_month_outlined,
-            label: "Bookings",
-            index: 1,
-          ),
+          
+            _buildNavItem(
+              icon: Icons.home_filled,
+              label: "Home",
+              index: 0,
+              route: '/home',
+              context: context,
+            ),
+           
+          
+           _buildNavItem(
+              icon: Icons.calendar_month_outlined,
+              label: "Bookings",
+              index: 1,
+              route: '/bookings',
+              context: context,
+
+            ),
+          
+          
+        
           _buildNavItem(
             icon: Icons.favorite_border,
             label: "Favourites",
             index: 2,
+            route: '/favorites',
+            context: context,
           ),
-          _buildNavItem(
+           _buildNavItem(
             icon: Icons.person_outline,
             label: "Profile",
             index: 3,
+            route: '/profil',
+            context: context,
           ),
+          
+          
         ],
       ),
     );
@@ -52,6 +71,8 @@ class CustomBottomNav extends StatelessWidget {
     required IconData icon,
     required String label,
     required int index,
+    required String? route,
+    BuildContext? context,
   }) {
 
     const primaryColor = Color(0xFF9156C1);
@@ -72,11 +93,18 @@ class CustomBottomNav extends StatelessWidget {
                 color: selected ? primaryColor : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
+              child: IconButton(onPressed: (){
+
+                print('tap $label icon');
+
+                Navigator.pushNamed(context!, route!);
+                
+              }, 
+              icon: Icon(
                 icon,
                 color: selected ? Colors.white : inactiveColor,
                 size: 22,
-              ),
+              ),)
             ),
             const SizedBox(height: 4),
             Text(

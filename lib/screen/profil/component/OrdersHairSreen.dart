@@ -1,13 +1,7 @@
+import 'package:beauty_zone/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// --- CONSTANTES DE STYLE ---
-class AppColors {
-  static const Color primaryPurple = Color(0xFF9156C1);
-  static const Color darkPurple = Color(0xFF7B39B6);
-  static const Color accentBlue = Color(0xFF2962FF);
-  static const Color lightGrey = Color(0xFFF5F5F5);
-}
 
 class OrderListScreen extends StatelessWidget {
   const OrderListScreen({super.key});
@@ -117,7 +111,7 @@ class OrderCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                        if (isDelivered) const Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.check_circle, color: Colors.blue, size: 18)),
+                        if (isDelivered) const Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.check_circle, color: AppColors.accentBlue, size: 18)),
                       ],
                     ),
                     _OrderActionButton(isDelivered: isDelivered, onPressed: onActionPressed),

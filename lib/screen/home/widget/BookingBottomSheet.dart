@@ -1,3 +1,4 @@
+import 'package:beauty_zone/screen/home/component/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -81,7 +82,11 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+
+                   Navigator.pushNamed(context, '/payment');
+
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: darkPurple,
                     minimumSize: const Size(double.infinity, 55),

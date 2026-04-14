@@ -20,16 +20,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800", // Image Hello
     ),
     OnboardingData(
-      title: "Ready?",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800", // Image Ready
-      isLastPage: true,
+      title: "Hello",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      imageUrl: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800", // Image Hello
     ),
     OnboardingData(
       title: "Hello",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
-      imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800", // Image Hello
+      imageUrl: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800", // Image Hello
+    ),
+    OnboardingData(
+      title: "Hello",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=800", // Image Hello
+    ),
+    OnboardingData(
+      title: "Ready?",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=800", // Image Ready
+      isLastPage: true,
     )
+    
   ];
 
   @override

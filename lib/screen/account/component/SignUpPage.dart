@@ -1,16 +1,67 @@
+import 'dart:convert';
+import 'package:beauty_zone/core/theme/app_colors.dart';
+import 'package:beauty_zone/presentation/pages/otp_screen.dart';
+import 'package:beauty_zone/screen/account/component/LoginPage.dart' hide AppColors;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http; // Import indispensable
 
-// --- CONFIGURATION DES COULEURS ---
-class AppColors {
-  static const Color primaryBlue = Color(0xFF0052FF); // Bleu vif du design
-  static const Color fieldGrey = Color(0xFFF7F8F9); // Gris très clair des champs
-  static const Color textGrey = Color(0xFF8B8B8B);
-  static const Color titleBlack = Color(0xFF1E1E1E);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class _SignUpScreenState extends State<SignUpScreen> {
+  // 1. Définition des contrôleurs pour récupérer les saisies
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  
+  bool _isLoading = false;
+
+  // 2. Fonction de communication avec l'API
+  Future<void> _handleSignUp() async {
+    setState(() => _isLoading = true);
+
+    const String url = 'http://185.213.27.226:9081/api/register/';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "name": _nameController.text.trim(),
+          "email": _emailController.text.trim(),
+          "whatsappNumber": _phoneController.text.trim(),
+          "password": _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print(  'Inscription réussie: ${response.statusCode} - ${response.body}'); // Log pour debug
+        // Inscription réussie -> Direction OTP
+        if (mounted) {
+          Navigator.pushNamed(context, '/home');
+        }
+      } else {
+        // Afficher l'erreur retournée par le backend
+        _showError("Erreur lors de l'inscription. Vérifiez vos informations.");
+      }
+    } catch (e) {
+      _showError("Impossible de joindre le serveur. Vérifiez votre connexion.");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +69,7 @@ class SignUpScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // 1. Forme décorative bleue à droite
+          // 1. Forme décorative bleue
           Positioned(
             top: 130,
             right: -100,
@@ -32,7 +83,6 @@ class SignUpScreen extends StatelessWidget {
             ),
           ),
 
-          // 2. Contenu principal
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -40,8 +90,6 @@ class SignUpScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 60),
-                  
-                  // Titre principal
                   Text(
                     'Create\nAccount',
                     style: GoogleFonts.poppins(
@@ -51,103 +99,90 @@ class SignUpScreen extends StatelessWidget {
                       height: 1.1,
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
+                  
                   // Photo de profil
                   Center(
-                    child: Stack(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black12, blurRadius: 10)
-                            ],
-                          ),
-                          child: const CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Color(0xFFFFC1E3), // Rose clair du fond avatar
-                            backgroundImage: NetworkImage(
-                              'https://api.dicebear.com/7.x/avataaars/png?seed=Felix', // Placeholder style illustration
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+                      ),
+                      child: const CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Color(0xFFFFC1E3),
+                        backgroundImage: NetworkImage('https://vip-espace-coiffure.com/wp-content/uploads/2022/10/Posts-VIP-4.png'),
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 25),
 
-// Champs de saisie réutilisables
-                  const CustomInputField(
+                  // Champs de saisie liés aux contrôleurs
+                  CustomInputField(
                     hintText: 'Full Name',
+                    controller: _nameController,
                     keyboardType: TextInputType.name,
                   ),
                   const SizedBox(height: 15),
-
-                  // Champs de saisie réutilisables
-                  const CustomInputField(
+                  CustomInputField(
                     hintText: 'Email',
+                    controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 15),
-                  const CustomInputField(
+                  CustomInputField(
                     hintText: 'Password',
+                    controller: _passwordController,
                     obscureText: true,
                     suffixIcon: Icons.visibility_off_outlined,
                   ),
                   const SizedBox(height: 15),
                   
-                  // Champ numéro de téléphone avec drapeau
-                  const PhoneInputField(),
+                  // Champ numéro de téléphone
+                  PhoneInputField(controller: _phoneController),
 
                   const SizedBox(height: 20),
 
-        
-                  // Bouton "Done"
+                  // Bouton "Done" avec état de chargement
                   ElevatedButton(
-                    onPressed: () {
-                      // Logique de création de compte
-                    },
+                    onPressed: _isLoading ? null : _handleSignUp,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryBlue,
                       minimumSize: const Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       elevation: 0,
                     ),
-                    child: Text(
-                      'Done',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: _isLoading 
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Done',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  // --- NOUVEAU : LIEN VERS LOGIN ---
+                  // Lien vers Login
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Vous avez déjà un compte ? ",
-                        style: GoogleFonts.poppins(
-                          color: AppColors.textGrey,
-                          fontSize: 14,
-                        ),
+                        style: GoogleFonts.poppins(color: AppColors.textGrey, fontSize: 14),
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Redirection vers la page de Login
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-                          print("Aller à la page Login");
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          );
                         },
                         child: Text(
                           "Se connecter",
@@ -160,10 +195,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 10),
-
-      
                 ],
               ),
             ),
@@ -174,16 +206,18 @@ class SignUpScreen extends StatelessWidget {
   }
 }
 
-// --- WIDGET RÉUTILISABLE : CHAMP DE SAISIE ---
+// --- WIDGET RÉUTILISABLE MODIFIÉ ---
 class CustomInputField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final IconData? suffixIcon;
   final TextInputType keyboardType;
+  final TextEditingController controller; // Ajouté
 
   const CustomInputField({
     super.key,
     required this.hintText,
+    required this.controller,
     this.obscureText = false,
     this.suffixIcon,
     this.keyboardType = TextInputType.text,
@@ -192,6 +226,7 @@ class CustomInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller, // Liaison
       obscureText: obscureText,
       keyboardType: keyboardType,
       decoration: InputDecoration(
@@ -199,9 +234,7 @@ class CustomInputField extends StatelessWidget {
         hintStyle: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 16),
         filled: true,
         fillColor: AppColors.fieldGrey,
-        suffixIcon: suffixIcon != null 
-            ? Icon(suffixIcon, color: Colors.grey[400], size: 20) 
-            : null,
+        suffixIcon: suffixIcon != null ? Icon(suffixIcon, color: Colors.grey[400], size: 20) : null,
         contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
@@ -212,9 +245,11 @@ class CustomInputField extends StatelessWidget {
   }
 }
 
-// --- WIDGET : CHAMP TÉLÉPHONE AVEC DRAPEAU ---
+// --- WIDGET TÉLÉPHONE MODIFIÉ ---
 class PhoneInputField extends StatelessWidget {
-  const PhoneInputField({super.key});
+  final TextEditingController controller; // Ajouté
+
+  const PhoneInputField({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -226,19 +261,17 @@ class PhoneInputField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: Row(
         children: [
-          // Sélecteur de pays simplifié
-          Row(
+          const Row(
             children: [
-             
-              const Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 18),
+              Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 18),
             ],
           ),
           const SizedBox(width: 10),
-          // Barre de séparation
           Container(height: 25, width: 1, color: Colors.grey[300]),
           const SizedBox(width: 15),
           Expanded(
             child: TextField(
+              controller: controller, // Liaison
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 hintText: 'Your number',

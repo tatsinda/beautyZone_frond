@@ -63,14 +63,50 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         "price": "5 000 FCFA",
         "extra": "30 min",
         "image":
-            "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop",
+            "https://i.pinimg.com/originals/70/fd/bd/70fdbd43bb5647365d0bd3fdb4076a18.jpg",
+      },
+      {
+        "name": "Coupe Classique",
+        "price": "5 000 FCFA",
+        "extra": "30 min",
+        "image":
+            "https://i0.wp.com/barbershop-phoenix.fr/wp-content/uploads/2023/10/Mid-Temp-Fade-Haircut.jpg?fit=500%2C500&ssl=1",
+      },
+      {
+        "name": "Coupe Classique",
+        "price": "5 000 FCFA",
+        "extra": "30 min",
+        "image":
+            "https://bizzbuck.storage.googleapis.com/wp-content/uploads/2024/10/15054846/1-1.jpg",
+      },
+      {
+        "name": "Coupe Classique",
+        "price": "5 000 FCFA",
+        "extra": "30 min",
+        "image":
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpuS02qqH8FXU0Eim0oSn0uLXusW5McN3P3w&s",
+      },
+      
+      {
+        "name": "Twist Homme",
+        "price": "9 000 FCFA",
+        "extra": "Style tendance",
+        "image":
+            "https://cindyfashion-coiffure-afro.fr/wp-content/uploads/2022/02/080b69abc63732c7244bf8c6bef0c24c.jpg",
       },
       {
         "name": "Twist Homme",
         "price": "9 000 FCFA",
         "extra": "Style tendance",
         "image":
-            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop",
+            "https://i.pinimg.com/736x/69/98/28/6998289066e85cba0762623e3f20a145.jpg",
+      },
+      {
+        "name": "Twist Homme",
+        "price": "9 000 FCFA",
+        "extra": "Style tendance",
+        "image":
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlIeNAwl72PMo4f0-kM26eDZUCwbRgoScI3A&s",
       },
     ],
     "Coiffure Femme": [
@@ -79,8 +115,37 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         "price": "15 000 FCFA",
         "extra": "Populaire",
         "image":
-            "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?q=80&w=1200&auto=format&fit=crop",
+            "https://i.pinimg.com/736x/0d/fc/4d/0dfc4d5e5a7c8540592bb470379e6503.jpg",
       },
+       {
+        "name": "Tresses Bohème",
+        "price": "15 000 FCFA",
+        "extra": "Populaire",
+        "image":
+            "https://img.freepik.com/photos-gratuite/femmes-dans-style-beaute-classique-annees-60_633478-334.jpg",
+      },
+      {
+        "name": "Lissage Brésilien",
+        "price": "18 000 FCFA",
+        "extra": "Cheveux lisses",
+        "image":
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu5-0UzWTRRA5k5QFXIHPVwwV2EKAzDv0_rQ&s",
+      },
+       {
+        "name": "Lissage Brésilien",
+        "price": "18 000 FCFA",
+        "extra": "Cheveux lisses",
+        "image":
+            "https://cindyfashion-coiffure-afro.fr/wp-content/uploads/2022/02/coiffeur-afro-a-toulouse.jpg",
+      },
+      {
+        "name": "Lissage Brésilien",
+        "price": "18 000 FCFA",
+        "extra": "Cheveux lisses",
+        "image":
+            "https://camillealbane.com/media/amasty/blog/coupes-cheveux-boucles-frises-Camille_Albane.jpeg",
+      }
+      ,
       {
         "name": "Brushing Luxe",
         "price": "8 000 FCFA",
@@ -109,8 +174,29 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         "price": "10 000 FCFA",
         "extra": "Soin complet",
         "image":
-            "https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=1200&auto=format&fit=crop",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5zTLjYfEEFSq302LEtYJmlewgrUtVYHuAnw&s",
       },
+        {
+          "name": "Nettoyage Profond",
+          "price": "10 000 FCFA",
+          "extra": "Soin complet",
+          "image":
+              "https://setalmaa.com/wp-content/uploads/Institut-Jovana-Beauty.jpeg",
+        },
+        {
+          "name": "Nettoyage Profond",
+          "price": "10 000 FCFA",
+          "extra": "Soin complet",
+          "image":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5W6VSoV-O6OWyAb9XUeVzXdTpwT-cxwUKFg&s",
+        },
+        {
+          "name": "Nettoyage Profond",
+          "price": "10 000 FCFA",
+          "extra": "Soin complet",
+          "image":
+              "https://www.masculincenter.ch/wp-content/uploads/2021/08/visage.jpg",
+        },
     ],
     "Massage": [
       {
@@ -127,6 +213,34 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         "image":
             "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1200&auto=format&fit=crop",
       },
+        {
+          "name": "Massage Premium",
+          "price": "25 000 FCFA",
+          "extra": "Corps complet",
+          "image":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9Ju17fGAIkuDhsiYJ2bVsktj1QQrRpBpZ1g&s",
+        },
+        {
+          "name": "Massage Premium",
+          "price": "25 000 FCFA",
+          "extra": "Corps complet",
+          "image":
+              "https://st4.depositphotos.com/4218696/38063/i/450/depositphotos_380638212-stock-photo-young-african-lady-enjoying-head.jpg",
+        },
+        {
+          "name": "Massage Premium",
+          "price": "25 000 FCFA",
+          "extra": "Corps complet",
+          "image":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5W6VSoV-O6OWyAb9XUeVzXdTpwT-cxwUKFg&s",
+        },
+        {
+          "name": "Massage Premium",
+          "price": "25 000 FCFA",
+          "extra": "Corps complet",
+          "image":
+              "https://panafricanbeauty.com/wp-content/uploads/2016/04/institut-bernard-cassiere-le-soin-tribal-corps-4073747nildc.jpg?w=558",
+        },
     ],
     "Pose Ongle": [
       {
@@ -143,6 +257,41 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         "image":
             "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=1200&auto=format&fit=crop",
       },
+        {
+            "name": "Pose Gel",
+            "price": "11 000 FCFA",
+            "extra": "Brillance",
+            "image":
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBHDdT4MVudxcp08HB9GkGAzRzsWlUZzojNA&s",
+          },
+          {
+            "name": "Pose Gel",
+            "price": "11 000 FCFA",
+            "extra": "Brillance",
+            "image":
+                "https://i.pinimg.com/736x/47/05/ab/4705abad8f31feaa8e534f3e94c079b1.jpg",
+          },
+          {
+            "name": "Pose Gel",
+            "price": "11 000 FCFA",
+            "extra": "Brillance",
+            "image":
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMChEZTv9xhCU0ra9gVBLdxqmUaddnKtowJQ&s",
+          },
+          {
+            "name": "Pose Gel",
+            "price": "11 000 FCFA",
+            "extra": "Brillance",
+            "image":
+                "https://s.alicdn.com/@sc04/kf/Hec9620d2c1e04989aba3190bc1f035c11/Hot-Selling-Gorgeous-Sweet-Cool-Exquisite-Sparkling-Flower-Design-Press-on-Wearable-Nail-Medium-Long-Detachable-Nail-Art.png",
+          },
+          {
+            "name": "Pose Gel",
+            "price": "11 000 FCFA",
+            "extra": "Brillance",
+            "image":
+                "https://images.superflive.com/products/SF3ACB3C/main_1.jpg?x-oss-process=image/interlace,1/format,webp",
+          },
     ],
   };
 

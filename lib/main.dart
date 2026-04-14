@@ -1,9 +1,12 @@
 import 'package:beauty_zone/presentation/pages/initial_splash_screen.dart';
+import 'package:beauty_zone/presentation/pages/otp_screen.dart';
 import 'package:beauty_zone/screen/account/component/LoginPage.dart';
 import 'package:beauty_zone/screen/account/component/SignUpPage.dart';
 import 'package:beauty_zone/screen/home/component/HairStyleDetail.dart';
 import 'package:beauty_zone/screen/home/component/HomePage.dart';
 import 'package:beauty_zone/screen/home/component/OtherHome.dart';
+import 'package:beauty_zone/screen/home/component/bookings.dart';
+import 'package:beauty_zone/screen/home/component/favorites.dart';
 import 'package:beauty_zone/screen/home/component/payment_screen.dart';
 import 'package:beauty_zone/screen/profil/component/OrdersHairSreen.dart';
 import 'package:beauty_zone/screen/profil/component/ProfilPage.dart';
@@ -24,44 +27,21 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/payment',
+      initialRoute: '/signup',
       routes: {
-        
-        '/splash': (context) => const InitialSplashScreen(),
-                '/payment': (context) => const PaymentScreen(),
 
-
-        '/login': (context) => const LoginScreen(),
-
+        '/': (context) => const InitialSplashScreen(),
         '/signup': (context) => const SignUpScreen(),
-        '/orderList': (context) => const OrderListScreen(),
-
-        '/profil': (context) => const ProfileScreen(),
-        '/home2': (context) => const BeautyHomePage(),
-        //'/login': (context) => const LoginPage(),
-        '/home': (context) => const HomePage(),
+        '/login': (context) => const LoginScreen(),
+        '/otp': (context) => const OtpVerificationScreen(),
+        '/home': (context) => const BeautyHomePage(),
         '/hairStyle': (context) => const HairStyleDetailScreen(),
+        '/payment': (context) => const PaymentScreen(),
+        '/profil': (context) => const ProfileScreen(),
+        '/favorites': (context) => const FavoritePage(),
+        '/bookings': (context) => const BookingPage(),
+        '/orderList': (context) => const OrderListScreen(),
       },
     );
   }
 } 
-/*
-void main() {
-  runApp(const BeautyZoneApp());
-}
-
-class BeautyZoneApp extends StatelessWidget {
-  const BeautyZoneApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-      ),
-      home: const HairStyleDetailScreen(),
-    );
-  }
-}*/

@@ -1,3 +1,4 @@
+import 'package:beauty_zone/screen/account/component/SignUpPage.dart' hide AppColors;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
@@ -59,6 +60,8 @@ class OnboardingPageWidget extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             // Navigation vers l'écran suivant (ex: Profil ou Commandes)
+                           Navigator.pushNamed(context, '/signup');
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryBlue,

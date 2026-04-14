@@ -12,7 +12,6 @@ class InitialSplashScreen extends StatefulWidget {
 
 class _InitialSplashScreenState extends State<InitialSplashScreen> with SingleTickerProviderStateMixin {
   
-
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -24,14 +23,13 @@ class _InitialSplashScreenState extends State<InitialSplashScreen> with SingleTi
       vsync: this,
     );
 
-    // On fait démarrer l'échelle à 0.5 au lieu de 0 pour éviter l'effet "écran vide"
     _animation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
     );
     
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 5), () { // Réduit à 4s pour une meilleure UX
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -50,14 +48,14 @@ class _InitialSplashScreenState extends State<InitialSplashScreen> with SingleTi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fond blanc forcé
-      body: Center( // On centre tout pour éviter que ça sorte de l'écran
+      backgroundColor: Colors.white,
+      body: Center(
         child: ScaleTransition(
           scale: _animation,
           child: Column(
-            mainAxisSize: MainAxisSize.min, // La colonne ne prend que la place nécessaire
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo Shoppe
+              // --- LOGO CONTAINER ---
               Container(
                 width: 150,
                 height: 150,
@@ -66,32 +64,42 @@ class _InitialSplashScreenState extends State<InitialSplashScreen> with SingleTi
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      spreadRadius: 2,
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 25,
+                      spreadRadius: 1,
                     )
                   ],
                 ),
-                child: const Icon(
-                  Icons.shopping_bag, 
-                  size: 70, 
-                  color: AppColors.primaryBlue, // Bleu Shoppe
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(75), // Assure que l'image reste ronde
+                  child: Padding(
+                    padding: const EdgeInsets.all(0), // Marge interne pour que le logo ne touche pas les bords
+                    child: Image.asset(
+                      'assets/images/log.png', // Chemin de ton logo
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
+              // -----------------------
               const SizedBox(height: 25),
               Text(
-                'Shoppe',
+                'BeautyZone',
                 style: GoogleFonts.poppins(
-                  fontSize: 40, 
-                  fontWeight: FontWeight.bold, 
-                  color: Colors.black,
+                  fontSize: 36, 
+                  fontWeight: FontWeight.w800, 
+                  color: const Color(0xFF1E1E1E), // Noir élégant
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Beautiful eCommerce UI Kit\nfor your online store',
+              Text(
+                'Votre salon de beauté digital\nà portée de main',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+                style: GoogleFonts.poppins(
+                  color: Colors.grey, 
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ],
           ),
@@ -99,5 +107,4 @@ class _InitialSplashScreenState extends State<InitialSplashScreen> with SingleTi
       ),
     );
   }
-
 }

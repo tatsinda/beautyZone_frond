@@ -1,16 +1,72 @@
+import 'dart:convert'; // Nécessaire pour jsonEncode et jsonDecode
+import 'dart:io';      // Pour détecter la plateforme
+import 'package:beauty_zone/core/theme/app_colors.dart';
+import 'package:beauty_zone/screen/home/component/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http; // Importation du package http
 
-// --- CONFIGURATION DES COULEURS (Cohérence Beauty Zone) ---
-class AppColors {
-  static const Color primaryBlue = Color(0xFF0052FF);
-  static const Color fieldGrey = Color(0xFFF7F8F9);
-  static const Color textGrey = Color(0xFF8B8B8B);
-  static const Color titleBlack = Color(0xFF1E1E1E);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class _LoginScreenState extends State<LoginScreen> {
+  // 1. Contrôleurs pour récupérer le texte saisi
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  // 2. Fonction de connexion
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+
+    // Note sur localhost : 
+    // Android Emulator utilise 10.0.2.2 au lieu de localhost
+    // iOS Simulator utilise localhost
+    final String url = Platform.isAndroid 
+        ? 'http://185.213.27.226:9081/api/login' 
+        : 'http://185.213.27.226:9081/api/login';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+      
+      print(  'Login response: ${response.statusCode} - ${response.body}'); // Log pour debug
+
+      if (response.statusCode == 200) {
+        // Succès !
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BeautyHomePage()),
+          );
+        }
+      } else {
+        // Erreur API (ex: 401 Unauthorized)
+        _showError("Identifiants incorrects ou erreur serveur.");
+      }
+    } catch (e) {
+      // Erreur de connexion (Serveur éteint, pas d'internet, etc.)
+      _showError("Impossible de contacter le serveur backend.");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,33 +74,10 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // 1. Formes décoratives en arrière-plan
-          Positioned(
-            top: -50,
-            left: -30,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryBlue,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 250,
-            right: -60,
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryBlue,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
+          // Formes décoratives (identiques à ton code)
+          _buildBackgroundCircle(-50, -30, 250),
+          _buildBackgroundCircle(250, null, 180, right: -60),
 
-          // 2. Contenu du formulaire
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -52,17 +85,10 @@ class LoginScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 150),
+                  Text('Login', style: GoogleFonts.poppins(fontSize: 48, fontWeight: FontWeight.w600)),
                   
-                  // Titre et sous-titre
-                  Text(
-                    'Login',
-                    style: GoogleFonts.poppins(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.titleBlack,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
+
+                   const SizedBox(height: 5),
                   Row(
                     children: [
                       Text(
@@ -77,40 +103,32 @@ class LoginScreen extends StatelessWidget {
                       const Icon(Icons.favorite, color: Colors.black, size: 20),
                     ],
                   ),
-
+                  
                   const SizedBox(height: 60),
 
-                  // Champs de saisie
-                  const CustomLoginField(hintText: 'number'),
+
+                  // 3. Utilisation des contrôleurs dans les champs
+                  CustomLoginField(hintText: 'email', controller: _emailController),
                   const SizedBox(height: 20),
-                  const CustomLoginField(hintText: 'Password', obscureText: true),
+                  CustomLoginField(hintText: 'Password', obscureText: true, controller: _passwordController),
 
                   const SizedBox(height: 50),
 
-                  // Bouton "Next"
+                  // 4. Bouton avec indicateur de chargement
                   ElevatedButton(
-                    onPressed: () {
-                      // Action de connexion
-                    },
+                    onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryBlue,
                       minimumSize: const Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     ),
-                    child: Text(
-                      'Next',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: _isLoading 
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('Next', style: GoogleFonts.poppins(fontSize: 18, color: Colors.white)),
                   ),
-
+                  
                   const SizedBox(height: 30),
+                  // Lien reset (identique)
 
                   // Lien mot de passe oublié
                   Row(
@@ -135,9 +153,9 @@ class LoginScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                    ],
                   ),
+                ],
+              ),
                 ],
               ),
             ),
@@ -146,36 +164,39 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildBackgroundCircle(double top, double? left, double size, {double? right}) {
+    return Positioned(
+      top: top, left: left, right: right,
+      child: Container(width: size, height: size, decoration: const BoxDecoration(color: AppColors.primaryBlue, shape: BoxShape.circle)),
+    );
+  }
 }
 
-// --- WIDGET RÉUTILISABLE POUR LES CHAMPS ---
+// --- WIDGET MODIFIÉ POUR ACCEPTER LE CONTROLLER ---
 class CustomLoginField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
+  final TextEditingController controller; // Ajouté
 
   const CustomLoginField({
     super.key,
     required this.hintText,
+    required this.controller,
     this.obscureText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller, // Liaison ici
       obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: GoogleFonts.poppins(
-          color: Colors.grey[400],
-          fontSize: 16,
-        ),
         filled: true,
         fillColor: AppColors.fieldGrey,
         contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 22),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
       ),
     );
   }
