@@ -1,6 +1,11 @@
+import 'package:beauty_zone/screen/account/component/LoginPage.dart';
 import 'package:beauty_zone/screen/home/widget/CustomBottomNav.dart';
 import 'package:beauty_zone/screen/home/widget/ServiceSection.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Import pour les appels API
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart'; // Import pour le décodage JSON
 
 class BeautyHomePage extends StatefulWidget {
   const BeautyHomePage({super.key});
@@ -11,8 +16,13 @@ class BeautyHomePage extends StatefulWidget {
 
 class _BeautyHomePageState extends State<BeautyHomePage> {
   int _currentIndex = 0;
+
   final PageController _pageController = PageController();
   int _currentBanner = 0;
+
+  // Variables pour gérer l'état des données
+  bool _isLoading = true;
+  Map<String, List<Map<String, String>>> serviceCategories = {};
 
   final List<Map<String, String>> banners = [
     {
@@ -43,257 +53,55 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
     {
       "title": "Hair Styling",
       "icon": Icons.face_retouching_natural,
-      "selected": false
+      "selected": false,
     },
     {"title": "Nail Art", "icon": Icons.brush_outlined, "selected": false},
     {"title": "Spa", "icon": Icons.spa_outlined, "selected": false},
   ];
 
-  final Map<String, List<Map<String, String>>> serviceCategories = {
-    "Coiffure Homme": [
-      {
-        "name": "Dégradé Pro",
-        "price": "7 000 FCFA",
-        "extra": "Très demandé",
-        "image":
-            "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop",
-      },
-      {
-        "name": "Coupe Classique",
-        "price": "5 000 FCFA",
-        "extra": "30 min",
-        "image":
-            "https://i.pinimg.com/originals/70/fd/bd/70fdbd43bb5647365d0bd3fdb4076a18.jpg",
-      },
-      {
-        "name": "Coupe Classique",
-        "price": "5 000 FCFA",
-        "extra": "30 min",
-        "image":
-            "https://i0.wp.com/barbershop-phoenix.fr/wp-content/uploads/2023/10/Mid-Temp-Fade-Haircut.jpg?fit=500%2C500&ssl=1",
-      },
-      {
-        "name": "Coupe Classique",
-        "price": "5 000 FCFA",
-        "extra": "30 min",
-        "image":
-            "https://bizzbuck.storage.googleapis.com/wp-content/uploads/2024/10/15054846/1-1.jpg",
-      },
-      {
-        "name": "Coupe Classique",
-        "price": "5 000 FCFA",
-        "extra": "30 min",
-        "image":
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpuS02qqH8FXU0Eim0oSn0uLXusW5McN3P3w&s",
-      },
-      
-      {
-        "name": "Twist Homme",
-        "price": "9 000 FCFA",
-        "extra": "Style tendance",
-        "image":
-            "https://cindyfashion-coiffure-afro.fr/wp-content/uploads/2022/02/080b69abc63732c7244bf8c6bef0c24c.jpg",
-      },
-      {
-        "name": "Twist Homme",
-        "price": "9 000 FCFA",
-        "extra": "Style tendance",
-        "image":
-            "https://i.pinimg.com/736x/69/98/28/6998289066e85cba0762623e3f20a145.jpg",
-      },
-      {
-        "name": "Twist Homme",
-        "price": "9 000 FCFA",
-        "extra": "Style tendance",
-        "image":
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlIeNAwl72PMo4f0-kM26eDZUCwbRgoScI3A&s",
-      },
-    ],
-    "Coiffure Femme": [
-      {
-        "name": "Tresses Bohème",
-        "price": "15 000 FCFA",
-        "extra": "Populaire",
-        "image":
-            "https://i.pinimg.com/736x/0d/fc/4d/0dfc4d5e5a7c8540592bb470379e6503.jpg",
-      },
-       {
-        "name": "Tresses Bohème",
-        "price": "15 000 FCFA",
-        "extra": "Populaire",
-        "image":
-            "https://img.freepik.com/photos-gratuite/femmes-dans-style-beaute-classique-annees-60_633478-334.jpg",
-      },
-      {
-        "name": "Lissage Brésilien",
-        "price": "18 000 FCFA",
-        "extra": "Cheveux lisses",
-        "image":
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu5-0UzWTRRA5k5QFXIHPVwwV2EKAzDv0_rQ&s",
-      },
-       {
-        "name": "Lissage Brésilien",
-        "price": "18 000 FCFA",
-        "extra": "Cheveux lisses",
-        "image":
-            "https://cindyfashion-coiffure-afro.fr/wp-content/uploads/2022/02/coiffeur-afro-a-toulouse.jpg",
-      },
-      {
-        "name": "Lissage Brésilien",
-        "price": "18 000 FCFA",
-        "extra": "Cheveux lisses",
-        "image":
-            "https://camillealbane.com/media/amasty/blog/coupes-cheveux-boucles-frises-Camille_Albane.jpeg",
+  @override
+  void initState() {
+    super.initState();
+    _fetchServiceCategories(); // Appel de l'API au chargement
+  }
+
+  // Fonction de communication HTTP
+  Future<void> _fetchServiceCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? idUser = prefs.getString('idUser');
+    // Remplace par ton IP si tu testes sur un téléphone physique (ex: 192.168.x.x)
+    // Ou 10.0.2.2 pour l'émulateur Android vers localhost
+    final String url =
+        'http://185.213.27.226:9081/api/beautyService/categories/$idUser';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // Décodage des données
+        final Map<String, dynamic> decodedData = json.decode(
+          utf8.decode(response.bodyBytes),
+        );
+
+        setState(() {
+          serviceCategories = decodedData.map((key, value) {
+            return MapEntry(
+              key,
+              List<Map<String, String>>.from(
+                (value as List).map((item) => Map<String, String>.from(item)),
+              ),
+            );
+          });
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Erreur lors du chargement des services');
       }
-      ,
-      {
-        "name": "Brushing Luxe",
-        "price": "8 000 FCFA",
-        "extra": "45 min",
-        "image":
-            "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1200&auto=format&fit=crop",
-      },
-      {
-        "name": "Chignon Mariage",
-        "price": "20 000 FCFA",
-        "extra": "Premium",
-        "image":
-            "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=1200&auto=format&fit=crop",
-      },
-    ],
-    "Soin de Visage": [
-      {
-        "name": "Glow Face Care",
-        "price": "12 000 FCFA",
-        "extra": "Peau éclatante",
-        "image":
-            "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1200&auto=format&fit=crop",
-      },
-      {
-        "name": "Nettoyage Profond",
-        "price": "10 000 FCFA",
-        "extra": "Soin complet",
-        "image":
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5zTLjYfEEFSq302LEtYJmlewgrUtVYHuAnw&s",
-      },
-        {
-          "name": "Nettoyage Profond",
-          "price": "10 000 FCFA",
-          "extra": "Soin complet",
-          "image":
-              "https://setalmaa.com/wp-content/uploads/Institut-Jovana-Beauty.jpeg",
-        },
-        {
-          "name": "Nettoyage Profond",
-          "price": "10 000 FCFA",
-          "extra": "Soin complet",
-          "image":
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5W6VSoV-O6OWyAb9XUeVzXdTpwT-cxwUKFg&s",
-        },
-        {
-          "name": "Nettoyage Profond",
-          "price": "10 000 FCFA",
-          "extra": "Soin complet",
-          "image":
-              "https://www.masculincenter.ch/wp-content/uploads/2021/08/visage.jpg",
-        },
-    ],
-    "Massage": [
-      {
-        "name": "Massage Relaxant",
-        "price": "18 000 FCFA",
-        "extra": "60 min",
-        "image":
-            "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=1200&auto=format&fit=crop",
-      },
-      {
-        "name": "Massage Premium",
-        "price": "25 000 FCFA",
-        "extra": "Corps complet",
-        "image":
-            "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1200&auto=format&fit=crop",
-      },
-        {
-          "name": "Massage Premium",
-          "price": "25 000 FCFA",
-          "extra": "Corps complet",
-          "image":
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9Ju17fGAIkuDhsiYJ2bVsktj1QQrRpBpZ1g&s",
-        },
-        {
-          "name": "Massage Premium",
-          "price": "25 000 FCFA",
-          "extra": "Corps complet",
-          "image":
-              "https://st4.depositphotos.com/4218696/38063/i/450/depositphotos_380638212-stock-photo-young-african-lady-enjoying-head.jpg",
-        },
-        {
-          "name": "Massage Premium",
-          "price": "25 000 FCFA",
-          "extra": "Corps complet",
-          "image":
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5W6VSoV-O6OWyAb9XUeVzXdTpwT-cxwUKFg&s",
-        },
-        {
-          "name": "Massage Premium",
-          "price": "25 000 FCFA",
-          "extra": "Corps complet",
-          "image":
-              "https://panafricanbeauty.com/wp-content/uploads/2016/04/institut-bernard-cassiere-le-soin-tribal-corps-4073747nildc.jpg?w=558",
-        },
-    ],
-    "Pose Ongle": [
-      {
-        "name": "Nail Art Chic",
-        "price": "9 000 FCFA",
-        "extra": "Longue tenue",
-        "image":
-            "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=1200&auto=format&fit=crop",
-      },
-      {
-        "name": "Pose Gel",
-        "price": "11 000 FCFA",
-        "extra": "Brillance",
-        "image":
-            "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=1200&auto=format&fit=crop",
-      },
-        {
-            "name": "Pose Gel",
-            "price": "11 000 FCFA",
-            "extra": "Brillance",
-            "image":
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBHDdT4MVudxcp08HB9GkGAzRzsWlUZzojNA&s",
-          },
-          {
-            "name": "Pose Gel",
-            "price": "11 000 FCFA",
-            "extra": "Brillance",
-            "image":
-                "https://i.pinimg.com/736x/47/05/ab/4705abad8f31feaa8e534f3e94c079b1.jpg",
-          },
-          {
-            "name": "Pose Gel",
-            "price": "11 000 FCFA",
-            "extra": "Brillance",
-            "image":
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMChEZTv9xhCU0ra9gVBLdxqmUaddnKtowJQ&s",
-          },
-          {
-            "name": "Pose Gel",
-            "price": "11 000 FCFA",
-            "extra": "Brillance",
-            "image":
-                "https://s.alicdn.com/@sc04/kf/Hec9620d2c1e04989aba3190bc1f035c11/Hot-Selling-Gorgeous-Sweet-Cool-Exquisite-Sparkling-Flower-Design-Press-on-Wearable-Nail-Medium-Long-Detachable-Nail-Art.png",
-          },
-          {
-            "name": "Pose Gel",
-            "price": "11 000 FCFA",
-            "extra": "Brillance",
-            "image":
-                "https://images.superflive.com/products/SF3ACB3C/main_1.jpg?x-oss-process=image/interlace,1/format,webp",
-          },
-    ],
-  };
+    } catch (e) {
+      print("Erreur API: $e");
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -334,15 +142,27 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
                     const SizedBox(height: 16),
                     _buildCategoryTabs(kPurpleFeminine, textGrey),
                     const SizedBox(height: 28),
-                    ...serviceCategories.entries.map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 26),
-                        child: ServiceSection(
-                          title: entry.key,
-                          items: entry.value,
-                        ),
-                      ),
-                    ),
+
+                    // Gestion de l'affichage pendant le chargement
+                    _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: kPurpleFeminine,
+                            ),
+                          )
+                        : Column(
+                            children: serviceCategories.entries
+                                .map(
+                                  (entry) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 26),
+                                    child: ServiceSection(
+                                      title: entry.key,
+                                      items: entry.value,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
                   ],
                 ),
               ),
@@ -361,14 +181,15 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
     );
   }
 
+  // --- Garder le reste des méthodes (_buildHeader, _buildSearchBar, etc.) identiques ---
+
   Widget _buildHeader(Color kPurpleFeminine) {
     const textGrey = Color(0xFF8B8B8B);
     return Column(
       children: [
         Row(
           children: [
-            Icon(Icons.location_on_outlined,
-                color: kPurpleFeminine, size: 22),
+            Icon(Icons.location_on_outlined, color: kPurpleFeminine, size: 22),
             const SizedBox(width: 8),
             const Expanded(
               child: Text(
@@ -431,8 +252,7 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
               ),
             ),
             SizedBox(width: 6),
-            Icon(Icons.keyboard_arrow_down_rounded,
-                color: textGrey, size: 22),
+            Icon(Icons.keyboard_arrow_down_rounded, color: textGrey, size: 22),
           ],
         ),
       ],
@@ -475,16 +295,12 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
       child: Stack(
         children: [
           PageView.builder(
-            controller: PageController(),
             itemCount: banners.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentBanner = index;
-              });
-            },
+            onPageChanged: (index) => setState(() => _currentBanner = index),
             itemBuilder: (context, index) {
               final banner = banners[index];
               return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
@@ -493,8 +309,10 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
                   ),
                 ),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
@@ -517,7 +335,6 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(height: 2),
                       Text(
                         banner["subtitle"]!,
                         style: const TextStyle(
@@ -526,19 +343,14 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const SizedBox(height: 2),
                       Text(
                         banner["description"]!,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const Spacer(),
-                      
                     ],
                   ),
                 ),
@@ -581,7 +393,6 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
         itemBuilder: (context, index) {
           final item = categories[index];
           final bool selected = item["selected"] as bool;
-
           return Container(
             constraints: const BoxConstraints(minWidth: 110),
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -593,7 +404,6 @@ class _BeautyHomePageState extends State<BeautyHomePage> {
                   : Border.all(color: const Color(0xFFF0F0F0)),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   item["icon"] as IconData,

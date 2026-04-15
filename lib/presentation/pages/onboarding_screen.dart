@@ -16,27 +16,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingData> _pages = [
     OnboardingData(
       title: "Hello",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      description: "Coupe, brushing, coloration ou balayage… Nos coiffeuses expertes vous subliment selon vos envies. Réservez votre créneau en un clic !",
       imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800", // Image Hello
     ),
     OnboardingData(
-      title: "Hello",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      title: "New Look",
+      description: " Nos formules coiffure événementielle (chignon, tresses, boucles) vous garantissent un look parfait qui tient toute la nuit. À vous de briller !",
       imageUrl: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800", // Image Hello
     ),
     OnboardingData(
-      title: "Hello",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      title: "coupe nette et moderne",
+      description: " Profitez de notre soin complet (coupe + taillage de barbe + shampooing tonique) pour un style affirmé et soigné. Hommes, à vous de jouer !",
       imageUrl: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800", // Image Hello
     ),
     OnboardingData(
-      title: "Hello",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non consectetur turpis. Morbi eu eleifend lacus.",
+      title: "Manucure & pédicure",
+      description: " chouchoutez vos mains et vos pieds. Soins cuticules, limage, massage et couleur au choix. Repartez avec des ongles irrésistibles.",
       imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=800", // Image Hello
     ),
     OnboardingData(
       title: "Ready?",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      description: " Notre formule express  vous offre un résultat impeccable sans attendre. Idéal pour la pause déjeuner et les sorties. Cliquez et venez !",
       imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=800", // Image Ready
       isLastPage: true,
     )

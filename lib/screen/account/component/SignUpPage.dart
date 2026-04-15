@@ -45,6 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Inscription réussie -> Direction OTP
         if (mounted) {
           Navigator.pushNamed(context, '/home');
+          Navigator.pop(context);
         }
       } else {
         // Afficher l'erreur retournée par le backend
@@ -179,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const LoginScreen()),
                           );

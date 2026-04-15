@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // --- CONFIGURATION DU THÈME ---
 class AppColors {
-  static const Color primaryPurple = Color(0xFF9156C1); // Couleur dominante
+  static const Color primaryPurple = Color(0xFF9156C1);
   static const Color backgroundGrey = Color(0xFFF8F9FA);
   static const Color textGrey = Color(0xFF757575);
 }
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key});
+  final Map<String, String> item;
+  const PaymentScreen({super.key, required this.item});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -17,6 +20,95 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String? selectedMethod;
+  bool isLoading = false;
+
+  // Controllers pour récupérer le texte des champs
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+
+  // Fonction pour envoyer la requête de paiement
+  Future<void> _handlePayment() async {
+    if (selectedMethod == null || _phoneController.text.isEmpty || _amountController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez remplir tous les champs et choisir un mode de paiement")),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    const String apiUrl = "http://185.213.27.226:9081/api/payment";
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "phoneNumber": _phoneController.text,
+          "amount": _amountController.text,
+          "idUser": int.parse(widget.item['idUser']!),
+          "idService": int.parse(widget.item['idService']!),
+        }),
+      );
+
+      
+
+      if (response.statusCode == 200) {
+        print("Paiement initié avec succès : ${response.body}");
+        _showSuccessDialog();
+      } else {
+        throw Exception("Erreur lors du paiement");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur : ${e.toString()}"), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  // Fonction pour afficher le Popup de succès
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 80),
+              const SizedBox(height: 20),
+              Text(
+                "Succès !",
+                style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "Le paiement a été initié avec succès. Vous recevrez une notification de confirmation sous peu.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Ferme le popup
+                  Navigator.of(context).pop(); // Retourne à l'écran précédent
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryPurple,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text("Fermer", style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +117,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryPurple,
         elevation: 0,
-        leading: const Icon(Icons.arrow_back_ios, color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('Paiement', style: GoogleFonts.poppins(color: Colors.white)),
         actions: const [Padding(padding: EdgeInsets.only(right: 15), child: Icon(Icons.person, color: Colors.white))],
       ),
@@ -33,18 +128,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Image du service et Détails
             Container(
               height: 250,
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage("https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800"),
+                  image: NetworkImage('${widget.item['image']}'),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -53,9 +146,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Tresses Africaines', 
+                      Text('${widget.item['name']}', 
                         style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text('10,000 CFA', 
+                      Text('${widget.item['price']}', 
                         style: GoogleFonts.poppins(fontSize: 20, color: AppColors.primaryPurple, fontWeight: FontWeight.w600)),
                     ],
                   ),
@@ -71,10 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Text("4,9 (55 avis)", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
-
                   const Divider(height: 40),
-
-                  // 2. SECTION PAIEMENT (Modifications demandées)
                   Text('Mode de paiement', 
                     style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
@@ -82,10 +172,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     "Vous pouvez effectuer le paiement complet ou verser une avance pour confirmer votre réservation.",
                     style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textGrey),
                   ),
-                  
                   const SizedBox(height: 20),
-
-                  // Sélection MTN / ORANGE
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -99,26 +186,35 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 30),
-
-                  // Champs de saisie
-                  _buildInputField(label: "Numéro de paiement", hint: "Ex: 6xx xxx xxx", icon: Icons.phone),
+                  _buildInputField(
+                    label: "Numéro de paiement", 
+                    hint: "Ex: 6xx xxx xxx", 
+                    icon: Icons.phone,
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                  ),
                   const SizedBox(height: 15),
-                  _buildInputField(label: "Montant à verser (CFA)", hint: "Ex: 5000", icon: Icons.money),
-
+                  _buildInputField(
+                    label: "Montant à verser (CFA)", 
+                    hint: "Ex: 5000", 
+                    icon: Icons.money,
+                    controller: _amountController,
+                    keyboardType: TextInputType.number,
+                  ),
                   const SizedBox(height: 40),
-
-                  // Bouton Valider
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: isLoading ? null : _handlePayment,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryPurple,
+                      disabledBackgroundColor: Colors.grey,
                       minimumSize: const Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     ),
-                    child: Text('Confirmer le Paiement', 
-                      style: GoogleFonts.poppins(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: isLoading 
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text('Confirmer le Paiement', 
+                          style: GoogleFonts.poppins(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -153,13 +249,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _buildInputField({required String label, required String hint, required IconData icon}) {
+  Widget _buildInputField({
+    required String label, 
+    required String hint, 
+    required IconData icon, 
+    required TextEditingController controller,
+    required TextInputType keyboardType,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         TextField(
+          controller: controller,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: AppColors.primaryPurple),
             hintText: hint,

@@ -62,6 +62,8 @@ class OnboardingPageWidget extends StatelessWidget {
                             // Navigation vers l'écran suivant (ex: Profil ou Commandes)
                            Navigator.pushNamed(context, '/signup');
 
+                      
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryBlue,

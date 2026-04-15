@@ -11,9 +11,12 @@ import 'package:beauty_zone/screen/home/component/payment_screen.dart';
 import 'package:beauty_zone/screen/profil/component/OrdersHairSreen.dart';
 import 'package:beauty_zone/screen/profil/component/ProfilPage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('fr_FR', null);
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +30,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/signup',
+      initialRoute: '/',
       routes: {
 
         '/': (context) => const InitialSplashScreen(),
@@ -35,8 +38,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/otp': (context) => const OtpVerificationScreen(),
         '/home': (context) => const BeautyHomePage(),
-        '/hairStyle': (context) => const HairStyleDetailScreen(),
-        '/payment': (context) => const PaymentScreen(),
+        '/hairStyle': (context) => const HairStyleDetailScreen(item: {},),
+        '/payment': (context) => const PaymentScreen(item: {},),
         '/profil': (context) => const ProfileScreen(),
         '/favorites': (context) => const FavoritePage(),
         '/bookings': (context) => const BookingPage(),

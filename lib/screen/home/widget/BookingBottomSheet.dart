@@ -1,9 +1,16 @@
 import 'package:beauty_zone/screen/home/component/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http; // Import pour le service HTTP
+import 'dart:convert'; // Pour l'encodage JSON
+import 'package:intl/intl.dart';
+
 
 class BookingBottomSheet extends StatefulWidget {
-  const BookingBottomSheet({super.key});
+  final String idUser;
+  final String idService;
+  final Map<String, String> item;
+  const BookingBottomSheet({super.key, required this.idUser, required this.idService, required this.item});
 
   @override
   State<BookingBottomSheet> createState() => _BookingBottomSheetState();
@@ -12,16 +19,72 @@ class BookingBottomSheet extends StatefulWidget {
 class _BookingBottomSheetState extends State<BookingBottomSheet> {
   int selectedDate = 15;
   String selectedTime = "10:00";
+  bool isLoading = false; // Pour gérer l'état du bouton
 
   static const Color darkPurple = Color(0xFF7B39B6);
   static const Color primaryPurple = Color(0xFF9156C1);
   static const Color lightPurple = Color(0xFFE1BEE7);
 
+  // Fonction de communication avec l'API
+  Future<void> _confirmBooking() async {
+    setState(() => isLoading = true);
+
+    const String apiUrl = "http://185.213.27.226:9081/api/appointments"; // 10.0.2.2 pour l'émulateur Android
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "idService": int.parse(widget.idService),
+          "date": selectedDate, // Format "int" en String comme demandé
+          "time": selectedTime,
+          "idUser": int.parse(widget.idUser),
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Succès
+        if (mounted) { 
+          DateTime now = DateTime.now();
+          String formattedDate = DateFormat('MMMM yyyy', 'fr_FR').format(now);
+          ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(content: Text("Réservation confirmée pour le $selectedDate $formattedDate à $selectedTime !"), 
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 5),
+            elevation: 10,
+          ),
+          );
+
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentScreen(
+              item: widget.item,
+            ),
+          ),
+        );
+          //Navigator.pop(context); // Ferme le bottom sheet
+        }
+      } else {
+        // Erreur Backend
+        throw Exception("Erreur lors de la réservation");
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur : ${e.toString()}"), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // On utilise DraggableScrollableSheet pour un effet de glissement fluide
     return DraggableScrollableSheet(
-      initialChildSize: 0.85, // Hauteur initiale (85% de l'écran)
+      initialChildSize: 0.85,
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, controller) {
@@ -32,7 +95,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
           ),
           child: Column(
             children: [
-              // Petite barre grise pour indiquer qu'on peut glisser vers le bas
               const SizedBox(height: 12),
               Container(
                 width: 40,
@@ -42,8 +104,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              
-              // En-tête du BottomSheet
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
@@ -60,11 +120,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 48), // Équilibre visuel
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
-
               Expanded(
                 child: ListView(
                   controller: controller,
@@ -77,29 +136,26 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   ],
                 ),
               ),
-
-              // Bouton de confirmation fixe en bas du BottomSheet
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: ElevatedButton(
-                  onPressed: () {
-
-                   Navigator.pushNamed(context, '/payment');
-
-                  },
+                  onPressed: isLoading ? null : _confirmBooking,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: darkPurple,
+                    disabledBackgroundColor: Colors.grey,
                     minimumSize: const Size(double.infinity, 55),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
-                  child: Text(
-                    'Continuer',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Confirmer la Réservation',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],
@@ -110,13 +166,13 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   }
 
   Widget _buildCalendarSection() {
-    // Logique de la grille calendrier (reprise du code précédent)
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-              .map((d) => Text(d, style: const TextStyle(color: Colors.grey))).toList(),
+              .map((d) => Text(d, style: const TextStyle(color: Colors.grey)))
+              .toList(),
         ),
         const SizedBox(height: 15),
         GridView.builder(

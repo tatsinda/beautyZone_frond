@@ -37,10 +37,13 @@ final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
       child: InkWell(
         onTap: () {
           print('Tapped on ${item['name']}');
-          // Handle card tap if needed
-          Navigator.pushReplacement(
+     
+
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HairStyleDetailScreen()),
+          MaterialPageRoute(
+            builder: (context) => HairStyleDetailScreen(item: item),
+          ),
         );
               
         },

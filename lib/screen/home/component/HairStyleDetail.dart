@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 class HairStyleDetailScreen extends StatelessWidget {
-  const HairStyleDetailScreen({super.key});
+  final Map<String, String> item;
+
+  const HairStyleDetailScreen({super.key,  required this.item});
 
   // Couleurs exactes extraites de la maquette
   static const Color primaryPurple = Color(0xFF9156C1);
@@ -45,7 +47,8 @@ class HairStyleDetailScreen extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.person_outline, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                  },
                 ),
               ],
             ),
@@ -60,7 +63,7 @@ class HairStyleDetailScreen extends StatelessWidget {
                   Stack(
                     children: [
                       Image.network(
-                        'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800',
+                        '${item['image']}',
                         width: double.infinity,
                         height: 350,
                         fit: BoxFit.cover,
@@ -91,9 +94,9 @@ class HairStyleDetailScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Tresses',
-                              style: TextStyle(
+                            Text(
+                              '${item['name']}',
+                              style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                                 color: textDark,
@@ -103,8 +106,8 @@ class HairStyleDetailScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 5),
-                        const Text(
-                          '10,000 CFA',
+                         Text(
+                          '${item['price']}',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -113,7 +116,7 @@ class HairStyleDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          'Des tresses africaines avec des longueurs allant jusqu’au bas du dos, idéales pour un look stylé et moderne.',
+                          '${item['description']}',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.grey.shade600,
@@ -126,9 +129,9 @@ class HairStyleDetailScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildThumbnail('https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=200'),
-                            _buildThumbnail('https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=200'),
-                            _buildThumbnail('https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=200'),
+                            _buildThumbnail('${item['image']}'),
+                            _buildThumbnail('${item['imageS']}'),
+                            _buildThumbnail('${item['imageT']}'),
                           ],
                         ),
                         
@@ -176,7 +179,11 @@ class HairStyleDetailScreen extends StatelessWidget {
     context: context,
     isScrollControlled: true, // Indispensable pour que le contenu puisse prendre plus de place
     backgroundColor: Colors.transparent, // Pour gérer nos propres arrondis
-    builder: (context) => const BookingBottomSheet(),
+    builder: (context) => BookingBottomSheet(
+      idUser: '${item['idUser']}',
+      idService: '${item['idService']}',
+      item: item,
+    ),
   );
           },
           style: ElevatedButton.styleFrom(
