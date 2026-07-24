@@ -107,7 +107,7 @@ class HairStyleDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                          Text(
-                          '${item['price']}',
+                          '${item['price']} FCFA',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,

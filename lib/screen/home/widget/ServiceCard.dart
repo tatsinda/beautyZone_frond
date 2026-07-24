@@ -19,7 +19,7 @@ class ServiceCard extends StatelessWidget {
     const textGrey = Color(0xFF8B8B8B);
 
     final screenHeight = MediaQuery.of(context).size.height;
-final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
+final imageHeight = screenHeight < 700 ? 95.0 : 145.0;
 
     return Container(
       width: width,
@@ -110,7 +110,7 @@ final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
 
                 Text(
 
-                  item['price']!,
+                  item['price']!+' FCFA',
 
                   style: const TextStyle(
 
@@ -126,7 +126,12 @@ final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
 
                 const SizedBox(height: 3),
 
-                Text(
+                Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                  children: [
+
+                    Text(
 
                   item['extra']!,
 
@@ -146,10 +151,8 @@ final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
 
                 ),
 
-                const SizedBox(height: 2),
 
-                Row(
-
+                    Row(
                   children: const [
 
                     Icon(
@@ -184,6 +187,14 @@ final imageHeight = screenHeight < 700 ? 95.0 : 120.0;
 
                 ),
 
+
+                  ],
+
+                ),
+                
+
+
+                
               ],
 
             ),

@@ -19,7 +19,9 @@ class BookingBottomSheet extends StatefulWidget {
 class _BookingBottomSheetState extends State<BookingBottomSheet> {
   int selectedDate = 15;
   String selectedTime = "10:00";
+  String finalDate = "";
   bool isLoading = false; // Pour gérer l'état du bouton
+
 
   static const Color darkPurple = Color(0xFF7B39B6);
   static const Color primaryPurple = Color(0xFF9156C1);
@@ -37,7 +39,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "idService": int.parse(widget.idService),
-          "date": selectedDate, // Format "int" en String comme demandé
+          "date": finalDate,
           "time": selectedTime,
           "idUser": int.parse(widget.idUser),
         }),
@@ -184,7 +186,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             int day = index + 1;
             bool isSelected = selectedDate == day;
             return GestureDetector(
-              onTap: () => setState(() => selectedDate = day),
+              onTap: () => setState(() {
+                selectedDate = day;
+
+                DateTime now = DateTime.now();
+                 String formattedDate = DateFormat('MMMM yyyy', 'fr_FR').format(now);
+                finalDate = "$day $formattedDate";
+
+              } ),
               child: Container(
                 margin: const EdgeInsets.all(4),
                 alignment: Alignment.center,

@@ -182,7 +182,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                       _paymentMethodIcon(
                         "ORANGE", 
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1200px-Orange_logo.svg.png",
+                        "https://www.telecomreviewafrica.com/wp-content/uploads/2017/03/news-16-03-02.jpg",
                       ),
                     ],
                   ),

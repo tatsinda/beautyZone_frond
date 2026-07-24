@@ -38,6 +38,7 @@ dependencies:
   http: ^1.1.0  # Pour les requêtes HTTP
   shared_preferences: ^2.2.2
   intl: ^0.18.1
+  image_picker: ^1.0.4 # Pour choisir les photos dans la galerie
 
 dev_dependencies:
   flutter_test:

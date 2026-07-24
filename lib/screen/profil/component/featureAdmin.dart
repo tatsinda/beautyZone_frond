@@ -2,18 +2,18 @@ import 'package:beauty_zone/screen/admin/adminUploadService.dart';
 import 'package:beauty_zone/screen/home/widget/CustomBottomNav.dart';
 import 'package:beauty_zone/screen/profil/component/OrdersHairSreen.dart';
 import 'package:beauty_zone/screen/profil/component/appointment.dart';
-import 'package:beauty_zone/screen/profil/component/featureAdmin.dart';
+import 'package:beauty_zone/screen/profil/component/listServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class FeatureAdmin extends StatefulWidget {
+  const FeatureAdmin({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<FeatureAdmin> createState() => _FeatureAdminState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _FeatureAdminState extends State<FeatureAdmin> {
   // On initialise l'index à 3 (souvent la position du profil dans la barre)
   int _currentIndex = 3;
 
@@ -25,89 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showPasswordDialog() {
     final TextEditingController passwordController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            "Accès Administrateur",
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: darkPurple,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Veuillez saisir le mot de passe pour accéder à l'espace admin.",
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: passwordController,
-                obscureText: true, // Pour cacher les caractères
-                decoration: InputDecoration(
-                  hintText: "Mot de passe",
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                    color: primaryPurple,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                "Annuler",
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryPurple,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                if (passwordController.text == 'Admin1234') {
-                  // Fermer le popup
-                  Navigator.pop(context);
-                  // Rediriger vers l'interface Admin
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FeatureAdmin(),
-                    ),
-                  );
-                } else {
-                  // Afficher un message d'erreur
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Mot de passe incorrect !"),
-                      backgroundColor: Colors.red,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
-              child: const Text(
-                "Valider",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+   
   }
 
   @override
@@ -182,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: const CircleAvatar(
                                 radius: 70,
                                 backgroundImage: NetworkImage(
-                                  'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?q=80&w=1000&auto=format&fit=crop',
+                                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXfVaeu10YhKAJ9kFhvrB2Ca7FcFr971HxuA&s',
                                 ),
                               ),
                             ),
@@ -190,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 15),
                             // 4. Informations utilisateur
                             Text(
-                              'Laura',
+                              'Boss Lady',
                               style: GoogleFonts.poppins(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -198,14 +116,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             const Text(
-                              '+237 653 12 88 54',
+                              '+237 6 79 62 24 25 ',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 16,
                               ),
                             ),
                             const Text(
-                              'laura@example.com',
+                              'bossLady@example.com',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 16,
@@ -215,50 +133,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 30),
                             // 5. Liste des options
                             _buildProfileOption(
-                              icon: Icons.shopping_basket_outlined,
-                              title: 'Mes Rendez-vous',
+                              icon: Icons.add_card,
+                              title: 'Ajout Service',
                               onTap: () {
-                                print('Mes Rendez-vous tapped');
+                                print('Ajout Service tapped');
+
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const UserReservationsScreen(),
+                                        const AdminUploadServiceScreen(),
                                   ),
                                 );
                               },
                             ),
                             _buildProfileOption(
                               icon: Icons.shopping_bag_outlined,
-                              title: 'Mes Commandes',
+                              title: 'List Services',
                               badge: '3',
-                              onTap: () {},
-                            ),
-                            _buildProfileOption(
-                              icon: Icons.card_giftcard_outlined,
-                              title: 'Mes Points',
-                              trailingText: '7 pts',
-                              onTap: () {},
-                            ),
-                            _buildProfileOption(
-                              icon: Icons.chat_bubble_outline,
-                              title: 'Mes Avis',
-                              onTap: () {},
-                            ),
-                            _buildProfileOption(
-                              icon: Icons.settings_outlined,
-                              title: 'Espace Admin',
                               onTap: () {
-                                // On appelle la fonction de vérification au lieu de naviguer directement
-                                _showPasswordDialog();
+
+                                print('List Services tapped');
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ListServicesScreen(),
+                                  ),
+                                );
+
                               },
                             ),
-                            _buildProfileOption(
-                              icon: Icons.history_outlined,
-                              title: 'Déconnexion',
-                              onTap: () {},
-                              isLast: true,
-                            ),
+                            
+                           
+                           
+                        
                           ],
                         ),
                       ),
@@ -269,15 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           // Insertion de la barre de navigation en bas de la Column
-          CustomBottomNav(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-              // Ici, tu pourras ajouter la navigation vers les autres pages
-            },
-          ),
+         
         ],
       ),
     );
